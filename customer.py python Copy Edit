@@ -1,0 +1,78 @@
+import tkinter as tk
+from tkinter import messagebox, ttk
+from database import create_connection
+
+def open_customer_window():
+    window = tk.Toplevel()
+    window.title("Customer Management - HiHi Accounting")
+    window.geometry("700x500")
+    window.resizable(False, False)
+
+    # فرم ورودی
+    form_frame = tk.Frame(window, padx=10, pady=10)
+    form_frame.pack(fill="x")
+
+    labels = ["Name", "Phone", "Email", "Address"]
+    entries = {}
+
+    for i, label in enumerate(labels):
+        tk.Label(form_frame, text=label + ":").grid(row=i, column=0, sticky="e", pady=5)
+        entry = tk.Entry(form_frame, width=40)
+        entry.grid(row=i, column=1, pady=5)
+        entries[label.lower()] = entry
+
+    # دکمه‌های ثبت و پاک‌کردن
+    button_frame = tk.Frame(form_frame)
+    button_frame.grid(row=4, columnspan=2, pady=10)
+
+    def add_customer():
+        name = entries["name"].get().strip()
+        phone = entries["phone"].get().strip()
+        email = entries["email"].get().strip()
+        address = entries["address"].get().strip()
+
+        if not name:
+            messagebox.showerror("Error", "Customer name is required")
+            return
+
+        conn = create_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)",
+                       (name, phone, email, address))
+        conn.commit()
+        conn.close()
+
+        messagebox.showinfo("Success", "Customer added successfully")
+        clear_form()
+        load_customers()
+
+    def clear_form():
+        for entry in entries.values():
+            entry.delete(0, tk.END)
+
+    tk.Button(button_frame, text="Add Customer", width=15, command=add_customer).grid(row=0, column=0, padx=5)
+    tk.Button(button_frame, text="Clear", width=10, command=clear_form).grid(row=0, column=1, padx=5)
+
+    # جدول نمایش مشتریان
+    table_frame = tk.Frame(window, padx=10)
+    table_frame.pack(fill="both", expand=True)
+
+    columns = ("id", "name", "phone", "email", "address")
+    customer_table = ttk.Treeview(table_frame, columns=columns, show="headings")
+    for col in columns:
+        customer_table.heading(col, text=col.capitalize())
+        customer_table.column(col, anchor="center", width=100 if col == "id" else 150)
+    customer_table.pack(fill="both", expand=True)
+
+    # بارگذاری مشتریان از دیتابیس
+    def load_customers():
+        for row in customer_table.get_children():
+            customer_table.delete(row)
+        conn = create_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM customers")
+        for row in cursor.fetchall():
+            customer_table.insert("", tk.END, values=row)
+        conn.close()
+
+    load_customers()
