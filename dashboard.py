@@ -1,3 +1,4 @@
+from customer import open_customer_window
 import tkinter as tk
 from tkinter import messagebox
 
@@ -17,7 +18,7 @@ def open_dashboard():
 
     # هر دکمه به یک ماژول متصل خواهد شد (فعلاً فقط پیام نشان می‌دهند)
     buttons = [
-        ("🧑‍💼 Customers", lambda: messagebox.showinfo("Coming Soon", "Customer management")),
+("🧑‍💼 Customers", open_customer_window),
         ("📦 Products", lambda: messagebox.showinfo("Coming Soon", "Product management")),
         ("📋 Invoices", lambda: messagebox.showinfo("Coming Soon", "Invoice management")),
         ("📊 Reports", lambda: messagebox.showinfo("Coming Soon", "Reports")),
