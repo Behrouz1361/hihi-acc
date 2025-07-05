@@ -1,3 +1,5 @@
+from report import open_report_window
+
 from invoice import open_invoice_window
 
 from product import open_product_window
@@ -25,7 +27,8 @@ def open_dashboard():
 ("🧑‍💼 Customers", open_customer_window),
 ("📦 Products", open_product_window),
         ("📋 Invoices", open_invoice_window),
-        ("📊 Reports", lambda: messagebox.showinfo("Coming Soon", "Reports")),
+        ("📊 Reports", open_report_window),
+
         ("⚙️ Settings", lambda: messagebox.showinfo("Coming Soon", "Settings")),
         ("🔒 Logout", root.destroy)
     ]
